@@ -1,3 +1,9 @@
+
+/*Matt L Lab 10 (Cracking Passwords)
+* April 22, 2019
+* Last Edit: April 22, 2019 @ 10:52 PM
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
