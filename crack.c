@@ -1,60 +1,91 @@
-
-/*Matt L Lab 10 (Cracking Passwords)
-* April 22, 2019
-* Last Edit: April 22, 2019 @ 10:52 PM
+/*
+*  Matt L Lab 10 Cracking Passwords
+*  April 23, 2019
+*  Last Edit: April 25, 2019 @ 2:09am
 */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "md5.h"
-
-const int PASS_LEN=20;        // Maximum any password will be
-const int HASH_LEN=33;        // Length of MD5 hash strings
-
-// Given a hash and a plaintext guess, return 1 if
-// the hash of the guess matches the given hash.
-// That is, return 1 if the guess is correct.
-int tryguess(char *hash, char *guess)
-{
-    // Hash the guess using MD5
-
-    // Compare the two hashes
-
-    // Free any malloc'd memory
-
-    return 0;
-}
-
-// Read in the dictionary file and return the array of strings
-// and store the length of the array in size.
-// This function is responsible for opening the dictionary file,
-// reading from it, building the data structure, and closing the
-// file.
-char **read_dictionary(char *filename, int *size)
-{
-    *size = 0;
-    return NULL;
-}
+#include <sys/types.h>
+#include <sys/stat.h>
 
 
-int main(int argc, char *argv[])
-{
-    if (argc < 3) 
-    {
-        printf("Usage: %s hash_file dict_file\n", argv[0]);
-        exit(1);
-    }
+//------------------------------
 
-    // Read the dictionary file into an array of strings.
-    int dlen;
-    char **dict = read_dictionary(NULL, NULL);
+char** read_dictionary(char *filename) {
 
-    // Open the hash file for reading.
+         struct stat st;
+         if (stat(filename, &st) == -1) 
+         {
+         fprintf (stderr, "cant get info about, %s\n", filename);
+         exit (1);
+         }
+         
+         int len = st.st_size;
+         char *file = malloc(len);
+        
+         //Read entire file into memory (alloc)
+        FILE *f = fopen (filename, "r");
+            if (!f) 
+            {
+                printf ("cant open %s for read\n", filename);
+            exit(1);
+            }
+            
+        fread(file, 1, len, f);
+        fclose(f);
+    
+         //Replace new lines "\n" with nulls "\0"
+        int count = 0;
+            
+            for (int i = 0; i < len; i++) 
+            {
+                if (file[i] == '\n')
+                {
+                    file[i] = '\0';
+                    file[i] = '\0';
+                    count ++;
+            } 
+                }
+
+//------------------------------
+
+        //space for array of pointers
+        char** line = malloc((count +1) * sizeof(char *)); 
+
+        //Fill in addresses
+        int word = 0;
+        line[word] = file; //the first word in the file
+        word++;
+        
+            for (int i = 1; i < len; i++)
+            {
+                if( file[i] =='\0' && i+1 < len) 
+                {
+                    line[word] = &file[i+1]; //or &file [i+1];
+                     word++;
+            }
+                }
+        line[word] = NULL;
+
+             //Return address of second array
+            return line;
+            }
     
 
-    // For each hash, try every entry in the dictionary.
-    // Print the matching dictionary entry.
-    // Need two nested loops.
-}
+//------------------------------
+
+    int main () 
+    {
+        char ** x = read_dictionary("rockyou100.txt");
+        //printf("%s\n", x[3]);
+        int i = 0;
+        
+        while (x[i]!= NULL)
+        {
+            printf("%s\n", x[i]);
+            i++;
+        }
+        free(x[0]); //second array
+        free(x);
+     }
